@@ -1,11 +1,14 @@
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
 const config = require('./config.js')
+const fs = require('fs')
 class ClydeClient extends AkairoClient {
     constructor() {
         super({
             ownerID: config.ownerID
         }, {
-            disableMentions: 'everyone',
+            allowedMentions: {
+                parse: ['roles', 'users']
+            },
             ws: {
                 properties: {
                     $browser: 'Discord Android'
@@ -24,6 +27,14 @@ class ClydeClient extends AkairoClient {
         this.commandHandler.useListenerHandler(this.listenerHandler);
         this.listenerHandler.loadAll();
         this.commandHandler.loadAll();
+
+        fs.readdir('./Structures', (err, files) => {
+            if (err) throw err
+            const jsfiles = files.filter(f => f.endsWith('.js'))
+            jsfiles.forEach(file => {
+                require(`./Structures/${file}`)
+            })
+        })
     }
 }
 
