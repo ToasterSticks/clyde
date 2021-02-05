@@ -5,7 +5,9 @@ class ClydeClient extends AkairoClient {
         super({
             ownerID: config.ownerID
         }, {
-            disableMentions: 'everyone',
+            allowedMentions: {
+                parse: ['roles', 'users']
+            },
             ws: {
                 properties: {
                     $browser: 'Discord Android'
