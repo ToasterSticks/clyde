@@ -1,5 +1,7 @@
 const { Command } = require('discord-akairo');
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js');
+const fetch = require('node-fetch')
+const vm = require('vm')
 
 const clean = (text) => {
     if (typeof text === "string")
@@ -23,16 +25,20 @@ class EvalCommand extends Command {
     }
 
     async exec(message,args) {
-        let evaled;
-        let code;
+        let evaled = { message, fetch }
+        let code = args.code
+            .replace(/(^`{1,3}|(?<=```)js)|`{1,3}$/g, "")
+            .trim();
+
+      if(code.includes('token')) return
 
       try {
-        code = args.code
-          .replace(/(^`{1,3}|(?<=```)js)|`{1,3}$/g, "")
-          .trim();
-        evaled = await eval(`( async () => {
-                return ${code}
-            })()`);
+        const script = new vm.Script(`( async () => {
+                   return ${code}
+        })()`)
+        evaled = vm.createContext(evaled)
+
+        evaled = await script.runInContext(evaled);
       } catch (err) {
         return message.channel.send(
           `\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``
