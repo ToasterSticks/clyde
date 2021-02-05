@@ -1,11 +1,16 @@
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
-const config = require('./config.json')
-class MyClient extends AkairoClient {
+const config = require('./config.js')
+class ClydeClient extends AkairoClient {
     constructor() {
         super({
             ownerID: config.ownerID
         }, {
-            disableMentions: 'everyone'
+            disableMentions: 'everyone',
+            ws: {
+                properties: {
+                    $browser: 'Discord Android'
+                }
+            }
         });
 
         this.commandHandler = new CommandHandler(this, {
@@ -22,5 +27,5 @@ class MyClient extends AkairoClient {
     }
 }
 
-const client = new MyClient();
+const client = new ClydeClient();
 client.login(config.token);
